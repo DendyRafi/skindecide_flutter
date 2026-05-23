@@ -23,5 +23,6 @@
                 "copilot/oswe-vscode-prime"
             ]
         }
-    }
+    },
+    "cSpell.enabled": false
 }
