@@ -163,20 +163,33 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.spaceBetween,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        const AppBrand(size: 22),
-        GlassActionButton(
-          label: 'Pengaturan',
-          icon: Icons.tune_rounded,
-          onTap: onSettings,
-        ),
-        const GlassTag(label: 'PROMETHEE TEAM', fontSize: 10),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 10,
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          const AppBrand(size: 21),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GlassActionButton(
+                label: 'PENGATURAN',
+                icon: Icons.tune_rounded,
+                onTap: onSettings,
+              ),
+              const SizedBox(width: 10),
+              const GlassTag(
+                label: 'PROMETHEE TEAM',
+                fontSize: 9.5,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -190,59 +203,44 @@ class _HeroSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'SKINDECIDE - ASISTEN\nREKOMENDASI SKIN',
+          'SKINDECIDE - ASISTEN REKOMENDASI SKIN',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             color: kAccentGreen,
-            letterSpacing: 1.7,
-            height: 1.3,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w600,
+            fontSize: 11,
           ),
         ),
         const SizedBox(height: 12),
-        Text.rich(
-          TextSpan(
-            text: 'Rekomendasi ',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: kTextPrimary,
-              letterSpacing: 1.0,
-              height: 1.2,
-            ),
-            children: [
-              TextSpan(
-                text: 'Skin',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: kAccentGreen,
-                  letterSpacing: 1.0,
-                  height: 1.2,
-                ),
-              ),
-              TextSpan(
-                text: '\nTerbaik',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: kTextPrimary,
-                  letterSpacing: 1.0,
-                  height: 1.2,
-                ),
-              ),
-            ],
-          ),
+        Text(
+          'Rekomendasi Skin Terbaik',
           textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: kTextPrimary,
+            letterSpacing: 0.5,
+            fontSize: 26,
+            height: 1.2,
+          ),
         ),
         const SizedBox(height: 14),
         Text(
-          'Masukkan nama skin yang ingin dibandingkan\nbeserta penilaian kriteria kamu',
+          'Masukkan nama skin yang ingin dibandingkan beserta penilaian kriteria kamu',
           textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: Colors.white, height: 1.4),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: kTextPrimary.withOpacity(0.9),
+            height: 1.5,
+            fontSize: 13.5,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
           '(Masukkan Skala 1-7, khusus Kategori masukkan skala 1-6, dan untuk Harga masukkan dalam jumlah Diamond)',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white.withOpacity(0.92),
-            height: 1.45,
+            color: kTextMuted.withOpacity(0.85),
+            height: 1.5,
+            fontSize: 10.5,
           ),
         ),
       ],
@@ -360,7 +358,7 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Nama / Varian Skin',
+                  labelText: 'NAMA / VARIAN SKIN',
                   hintText: 'Misal: Gusion Cosmic Gleam',
                 ),
                 textInputAction: TextInputAction.next,
@@ -369,71 +367,38 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
                 },
               ),
               const SizedBox(height: 18),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final fieldWidth = (constraints.maxWidth - 12) / 2;
-                  return Wrap(
-                    runSpacing: 16,
-                    spacing: 12,
-                    children: [
-                      for (final criterion in primaryCriteria)
-                        SizedBox(
-                          width: fieldWidth,
-                          child: _CriterionField(
-                            criterion: criterion,
-                            value:
-                                _values[criterion.id] ??
-                                criterion.kind.defaultValue,
-                            onChanged: (value) {
-                              setState(() {
-                                _values[criterion.id] = value;
-                              });
-                              _emitChange(values: _values);
-                            },
-                            priceController: criterion.id == 'price'
-                                ? _priceController
-                                : null,
-                            onPriceChanged: criterion.id == 'price'
-                                ? _handlePriceChanged
-                                : null,
-                            showHint: criterion.id == 'price',
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-              if (remainingCriteria.isNotEmpty) ...[
-                const SizedBox(height: 14),
-                Container(height: 1, color: kBorder),
-                const SizedBox(height: 14),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final fieldWidth = (constraints.maxWidth - 12) / 2;
-                    return Wrap(
-                      runSpacing: 16,
-                      spacing: 12,
-                      children: [
-                        for (final criterion in remainingCriteria)
-                          SizedBox(
-                            width: fieldWidth,
-                            child: _CriterionField(
-                              criterion: criterion,
-                              value:
-                                  _values[criterion.id] ??
-                                  criterion.kind.defaultValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _values[criterion.id] = value;
-                                });
-                                _emitChange(values: _values);
-                              },
-                            ),
-                          ),
-                      ],
-                    );
+              for (final criterion in primaryCriteria) ...[
+                _CriterionField(
+                  criterion: criterion,
+                  value: _values[criterion.id] ?? criterion.kind.defaultValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _values[criterion.id] = value;
+                    });
+                    _emitChange(values: _values);
                   },
+                  priceController:
+                      criterion.id == 'price' ? _priceController : null,
+                  onPriceChanged:
+                      criterion.id == 'price' ? _handlePriceChanged : null,
+                  showHint: criterion.id == 'price',
                 ),
+                const SizedBox(height: 18),
+              ],
+              if (remainingCriteria.isNotEmpty) ...[
+                for (final criterion in remainingCriteria) ...[
+                  _CriterionField(
+                    criterion: criterion,
+                    value: _values[criterion.id] ?? criterion.kind.defaultValue,
+                    onChanged: (value) {
+                      setState(() {
+                        _values[criterion.id] = value;
+                      });
+                      _emitChange(values: _values);
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                ],
               ],
             ],
           ),

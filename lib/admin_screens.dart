@@ -76,72 +76,82 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
+                constraints: const BoxConstraints(maxWidth: 430),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _AdminTopBar(
-                      leadingAction: GlassActionButton(
-                        label: 'SKIN DECIDE',
-                        onTap: () => Navigator.of(context).pushNamed('/'),
-                      ),
+                      leadingAction: const AppBrand(size: 21),
                       trailingActions: [
                         GlassActionButton(
-                          label: '← Halaman Utama',
+                          label: '← HALAMAN UTAMA',
                           onTap: () => Navigator.of(context).pushNamed('/'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 32),
+                    Text(
+                      'SKINDECIDE - ADMIN',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: kAccentGreen,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Login Admin',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: kTextPrimary,
+                        letterSpacing: 0.5,
+                        fontSize: 26,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'Masuk untuk mengatur kriteria rekomendasi dan reset password admin.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: kTextPrimary.withOpacity(0.9),
+                        height: 1.5,
+                        fontSize: 13.5,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     AppPanel(
-                      padding: const EdgeInsets.all(22),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
-                            'SkinDecide - Admin',
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  color: kAccentGreen,
-                                  letterSpacing: 1.4,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Login Admin',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(color: kTextPrimary, fontSize: 24),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Masuk untuk mengatur kriteria rekomendasi dan reset password admin.',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: Colors.white, height: 1.5),
-                          ),
-                          const SizedBox(height: 22),
                           TextField(
                             controller: _usernameController,
                             decoration: const InputDecoration(
-                              labelText: 'Username Admin',
+                              labelText: 'USERNAME ADMIN',
                               hintText: 'admin',
                             ),
+                            textInputAction: TextInputAction.next,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 18),
                           TextField(
                             controller: _passwordController,
                             obscureText: true,
                             decoration: const InputDecoration(
-                              labelText: 'Password',
+                              labelText: 'PASSWORD',
                               hintText: 'Password admin',
                             ),
                             onSubmitted: (_) => _submit(),
                           ),
                           const SizedBox(height: 10),
-                          Material(
-                            color: Colors.transparent,
+                          Theme(
+                            data: Theme.of(context).copyWith(
+                              checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                            ),
                             child: CheckboxListTile(
                               value: _rememberSession,
                               onChanged: (value) {
@@ -159,11 +169,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                               dense: true,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 18),
                           NeonPrimaryButton(
-                            label: _isSubmitting
-                                ? 'Memproses...'
-                                : 'Login Admin',
+                            label: _isSubmitting ? 'Memproses...' : 'LOGIN ADMIN',
                             expand: true,
                             onPressed: _isSubmitting ? null : _submit,
                           ),
@@ -230,35 +238,19 @@ class AdminSettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1120),
+                constraints: const BoxConstraints(maxWidth: 430),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _AdminTopBar(
-                      leadingAction: const AppBrand(size: 22),
+                      leadingAction: const AppBrand(size: 21),
                       trailingActions: [
                         GlassActionButton(
-                          label: 'Admin: ${controller.adminDisplayName}',
-                          onTap: () {},
-                        ),
-                        GlassActionButton(
-                          label: 'Reset Password',
-                          onTap: () => Navigator.of(
-                            context,
-                          ).pushNamed('/admin/password'),
-                        ),
-                        GlassActionButton(
-                          label: 'Custom Background',
-                          onTap: () => Navigator.of(
-                            context,
-                          ).pushNamed('/custom-background'),
-                        ),
-                        GlassActionButton(
-                          label: '← Halaman Utama',
+                          label: '← UTAMA',
                           onTap: () => Navigator.of(context).pushNamed('/'),
                         ),
                         GlassActionButton(
-                          label: 'Logout',
+                          label: 'LOGOUT',
                           onTap: () async {
                             await controller.logoutAdmin();
                             if (!context.mounted) {
@@ -271,83 +263,94 @@ class AdminSettingsScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        GlassActionButton(
+                          label: 'RESET PASSWORD',
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pushNamed('/admin/password'),
+                        ),
+                        GlassActionButton(
+                          label: 'CUSTOM BACKGROUND',
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pushNamed('/custom-background'),
+                        ),
+                        GlassTag(
+                          label: 'Admin: ${controller.adminDisplayName}',
+                          fontSize: 9.5,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 30),
                     Text(
-                      'SkinDecide - Konfigurasi Sistem',
+                      'SKINDECIDE - KONFIGURASI SISTEM',
+                      textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: kAccentGreen,
-                        letterSpacing: 1.3,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Text(
                       'Pengaturan Kriteria',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(color: kTextPrimary, fontSize: 24),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: kTextPrimary,
+                        letterSpacing: 0.5,
+                        fontSize: 26,
+                        height: 1.2,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 14),
                     Text(
                       'Sesuaikan tipe kriteria, bobot kepentingan, serta tipe fungsi preferensi PROMETHEE beserta batas threshold (p, q, s).',
+                      textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        height: 1.45,
+                        color: kTextPrimary.withOpacity(0.9),
+                        height: 1.5,
+                        fontSize: 13.5,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     AppPanel(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isNarrow = constraints.maxWidth < 560;
-
-                          final controlCopy = Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Kontrol Admin',
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      color: kTextPrimary,
-                                      fontSize: 18,
-                                    ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'Gunakan reset untuk mengembalikan daftar kriteria ke nilai awal sistem.',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(color: kTextMuted),
-                              ),
-                            ],
-                          );
-
-                          final resetButton = NeonSecondaryButton(
-                            label: 'Reset Kriteria Semula',
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Kontrol Admin',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: kTextPrimary,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Gunakan reset untuk mengembalikan daftar kriteria ke nilai awal sistem.',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: kTextMuted,
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 18),
+                          NeonSecondaryButton(
+                            label: 'RESET KRITERIA SEMULA',
                             icon: Icons.restart_alt_rounded,
+                            expand: true,
                             onPressed: () => _confirmReset(context),
-                          );
-
-                          if (isNarrow) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                controlCopy,
-                                const SizedBox(height: 16),
-                                resetButton,
-                              ],
-                            );
-                          }
-
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(child: controlCopy),
-                              const SizedBox(width: 16),
-                              resetButton,
-                            ],
-                          );
-                        },
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 28),
                     Text(
                       'Daftar Kriteria Aktif',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -355,7 +358,7 @@ class AdminSettingsScreen extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     for (final criterion in controller.criteria) ...[
                       CriterionCardEditor(
                         key: ValueKey(criterion.id),
@@ -364,9 +367,9 @@ class AdminSettingsScreen extends StatelessWidget {
                         onDelete: () =>
                             controller.removeCriterion(criterion.id),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 18),
                     ],
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 24),
                     Text(
                       'Tambah Kriteria Baru',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -374,7 +377,7 @@ class AdminSettingsScreen extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     AddCriterionForm(onAdd: controller.addCriterion),
                   ],
                 ),
@@ -469,176 +472,146 @@ class _CriterionCardEditorState extends State<CriterionCardEditor> {
   @override
   Widget build(BuildContext context) {
     return AppPanel(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 360;
-              final titleBlock = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.criterion.label,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: kTextPrimary,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  GlassTag(
-                    label: _optimization.displayLabel,
-                    backgroundColor:
-                        _optimization == CriterionOptimization.maximize
-                        ? const Color(0xFF14210E)
-                        : const Color(0xFF231B11),
-                    borderColor: _optimization == CriterionOptimization.maximize
-                        ? kAccentGreen.withOpacity(0.35)
-                        : Colors.orange.withOpacity(0.35),
-                    textColor: _optimization == CriterionOptimization.maximize
-                        ? kAccentGreen
-                        : Colors.orangeAccent,
-                    fontSize: 10,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                  ),
-                ],
-              );
-
-              final deleteButton = NeonSecondaryButton(
-                label: 'Hapus',
-                height: 32,
-                filled: false,
-                onPressed: widget.onDelete,
-              );
-
-              if (isNarrow) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titleBlock,
-                    const SizedBox(height: 10),
-                    Align(alignment: Alignment.centerLeft, child: deleteButton),
-                  ],
-                );
-              }
-
-              return Row(
-                children: [
-                  Expanded(child: titleBlock),
-                  const SizedBox(width: 8),
-                  deleteButton,
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 14),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final fieldWidth = (constraints.maxWidth - 12) / 2;
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  SizedBox(
-                    width: fieldWidth,
-                    child: TextField(
-                      controller: _labelController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nama Kriteria',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: fieldWidth,
-                    child: DropdownButtonFormField<CriterionOptimization>(
-                      value: _optimization,
-                      dropdownColor: kSurfaceDark,
-                      decoration: const InputDecoration(
-                        labelText: 'Tipe Optimasi',
-                      ),
-                      items: CriterionOptimization.values
-                          .map(
-                            (value) => DropdownMenuItem<CriterionOptimization>(
-                              value: value,
-                              child: Text(
-                                value == CriterionOptimization.maximize
-                                    ? 'Maximize'
-                                    : 'Minimize',
-                              ),
-                            ),
-                          )
-                          .toList(growable: false),
-                      onChanged: (value) {
-                        if (value == null) {
-                          return;
-                        }
-                        setState(() {
-                          _optimization = value;
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: fieldWidth,
-                    child: TextField(
-                      controller: _weightController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                      ],
-                      decoration: const InputDecoration(
-                        labelText: 'Bobot (Weight)',
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: fieldWidth,
-                    child: DropdownButtonFormField<PreferenceFunction>(
-                      value: _function,
-                      dropdownColor: kSurfaceDark,
-                      decoration: const InputDecoration(
-                        labelText: 'Fungsi Preferensi',
-                      ),
-                      items: PreferenceFunction.values
-                          .map(
-                            (value) => DropdownMenuItem<PreferenceFunction>(
-                              value: value,
-                              child: Text(value.displayLabel),
-                            ),
-                          )
-                          .toList(growable: false),
-                      onChanged: (value) {
-                        if (value == null) {
-                          return;
-                        }
-                        setState(() {
-                          _function = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 14),
           Row(
             children: [
-              NeonPrimaryButton(label: 'Simpan', onPressed: _save),
-              const SizedBox(width: 8),
-              if (_isCore)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.criterion.label,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: kTextPrimary,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    GlassTag(
+                      label: _optimization.displayLabel.toUpperCase(),
+                      backgroundColor:
+                          _optimization == CriterionOptimization.maximize
+                          ? const Color(0xFF14210E)
+                          : const Color(0xFF231B11),
+                      borderColor: _optimization == CriterionOptimization.maximize
+                          ? kAccentGreen.withOpacity(0.35)
+                          : Colors.orange.withOpacity(0.35),
+                      textColor: _optimization == CriterionOptimization.maximize
+                          ? kAccentGreen
+                          : Colors.orangeAccent,
+                      fontSize: 9.5,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              NeonSecondaryButton(
+                label: '✕',
+                height: 36,
+                filled: false,
+                onPressed: widget.onDelete,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _labelController,
+            decoration: const InputDecoration(
+              labelText: 'NAMA KRITERIA',
+            ),
+          ),
+          const SizedBox(height: 18),
+          DropdownButtonFormField<CriterionOptimization>(
+            value: _optimization,
+            dropdownColor: kSurfaceDark,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'TIPE OPTIMASI',
+            ),
+            items: CriterionOptimization.values
+                .map(
+                  (value) => DropdownMenuItem<CriterionOptimization>(
+                    value: value,
+                    child: Text(
+                      value == CriterionOptimization.maximize
+                          ? 'Maximize'
+                          : 'Minimize',
+                    ),
+                  ),
+                )
+                .toList(growable: false),
+            onChanged: (value) {
+              if (value == null) {
+                return;
+              }
+              setState(() {
+                _optimization = value;
+              });
+            },
+          ),
+          const SizedBox(height: 18),
+          TextField(
+            controller: _weightController,
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+            ],
+            decoration: const InputDecoration(
+              labelText: 'BOBOT (WEIGHT)',
+            ),
+          ),
+          const SizedBox(height: 18),
+          DropdownButtonFormField<PreferenceFunction>(
+            value: _function,
+            dropdownColor: kSurfaceDark,
+            isExpanded: true,
+            decoration: const InputDecoration(
+              labelText: 'FUNGSI PREFERENSI',
+            ),
+            items: PreferenceFunction.values
+                .map(
+                  (value) => DropdownMenuItem<PreferenceFunction>(
+                    value: value,
+                    child: Text(value.displayLabel),
+                  ),
+                )
+                .toList(growable: false),
+            onChanged: (value) {
+              if (value == null) {
+                return;
+              }
+              setState(() {
+                _function = value;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: NeonPrimaryButton(
+                  label: 'SIMPAN',
+                  onPressed: _save,
+                ),
+              ),
+              if (_isCore) ...[
+                const SizedBox(width: 12),
                 Text(
                   'Kriteria inti sistem',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: kTextMuted),
+                  ).textTheme.bodySmall?.copyWith(color: kTextMuted, fontSize: 10),
                 ),
+              ],
             ],
           ),
         ],

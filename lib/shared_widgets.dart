@@ -75,7 +75,7 @@ ThemeData buildAppTheme() {
       surface: kSurfaceDark,
       primary: kAccentGreen,
     ),
-    scaffoldBackgroundColor: Colors.transparent,
+    scaffoldBackgroundColor: const Color(0xFF090D12),
     textTheme: GoogleFonts.syneTextTheme(base.textTheme).copyWith(
       headlineLarge: _orbitron(
         fontSize: 30,
@@ -118,21 +118,21 @@ ThemeData buildAppTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: kSurfaceDeep,
+      fillColor: const Color(0xFF0B1016),
       isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-      hintStyle: _syne(fontSize: 12.5, color: kTextMuted.withOpacity(0.8)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
+      hintStyle: _syne(fontSize: 12.5, color: kTextMuted.withOpacity(0.7)),
       labelStyle: _syne(
-        fontSize: 11,
+        fontSize: 10.5,
         fontWeight: FontWeight.w700,
         color: kTextMuted,
-        letterSpacing: 0.2,
+        letterSpacing: 0.5,
       ),
       floatingLabelStyle: _syne(
-        fontSize: 11,
+        fontSize: 10.5,
         fontWeight: FontWeight.w700,
-        color: kTextMuted,
-        letterSpacing: 0.2,
+        color: kAccentGreen,
+        letterSpacing: 0.5,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
@@ -144,15 +144,7 @@ ThemeData buildAppTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: kAccentGreen),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red.shade400),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.red.shade400),
+        borderSide: const BorderSide(color: kAccentGreen, width: 1.2),
       ),
     ),
     checkboxTheme: CheckboxThemeData(
@@ -200,31 +192,22 @@ class AppBackdrop extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         Image(image: controller.backgroundImageProvider, fit: BoxFit.cover),
-        Container(color: const Color(0xEB05070B)),
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xA8050A10), Color(0xD6091119), Color(0xF905070B)],
-            ),
-          ),
-        ),
+        Container(color: const Color(0xFB090D12)),
         Positioned(
           left: -80,
-          top: 40,
+          top: -20,
           child: _GlowOrb(
-            size: 220,
-            colors: [kAccentGreen.withOpacity(0.24), Colors.transparent],
+            size: 300,
+            colors: [kAccentGreen.withOpacity(0.12), Colors.transparent],
           ),
         ),
         Positioned(
-          right: -120,
-          bottom: 60,
+          right: -100,
+          bottom: 40,
           child: _GlowOrb(
-            size: 280,
+            size: 350,
             colors: [
-              const Color(0xFF8A5BD8).withOpacity(0.18),
+              const Color(0xFF8A5BD8).withOpacity(0.08),
               Colors.transparent,
             ],
           ),
@@ -259,16 +242,10 @@ class AppPanel extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(18),
-    this.backgroundColor = kSurfaceDark,
+    this.backgroundColor = const Color(0xD9111820),
     this.borderColor = kBorder,
-    this.radius = 16,
-    this.shadow = const [
-      BoxShadow(
-        color: Color(0x55000000),
-        blurRadius: 24,
-        offset: Offset(0, 14),
-      ),
-    ],
+    this.radius = 14,
+    this.shadow = const [],
   });
 
   final Widget child;
@@ -346,8 +323,8 @@ class AppBrand extends StatelessWidget {
         style: _orbitron(
           fontSize: size,
           fontWeight: FontWeight.w800,
-          color: footer ? kAccentGreen : kAccentGreen,
-          letterSpacing: 1,
+          color: kAccentGreen,
+          letterSpacing: 1.2,
         ),
         children: [
           TextSpan(
@@ -356,7 +333,7 @@ class AppBrand extends StatelessWidget {
               fontSize: size,
               fontWeight: FontWeight.w800,
               color: footer ? kTextMuted : kTextPrimary,
-              letterSpacing: 1,
+              letterSpacing: 1.2,
             ),
           ),
         ],
@@ -372,7 +349,7 @@ class GlassActionButton extends StatelessWidget {
     required this.onTap,
     this.icon,
     this.width,
-    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
   });
 
   final String label;
@@ -403,7 +380,7 @@ class GlassActionButton extends StatelessWidget {
             children: [
               if (icon != null) ...[
                 Icon(icon, size: 14, color: kTextMuted),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
               ],
               Text(
                 label,
@@ -411,10 +388,10 @@ class GlassActionButton extends StatelessWidget {
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 style: _syne(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
                   color: kTextMuted,
-                  letterSpacing: 0.2,
+                  letterSpacing: 0.8,
                 ),
               ),
             ],
@@ -432,7 +409,7 @@ class NeonPrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.icon,
     this.expand = false,
-    this.height = 44,
+    this.height = 48,
   });
 
   final String label;
@@ -445,13 +422,13 @@ class NeonPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = icon == null
         ? Text(
-            label,
+            label.toUpperCase(),
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.ellipsis,
             style: _orbitron(
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
+              fontSize: 12.8,
+              fontWeight: FontWeight.w700,
               color: Colors.black,
               letterSpacing: 0.5,
             ),
@@ -460,16 +437,16 @@ class NeonPrimaryButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 16, color: Colors.black),
-              const SizedBox(width: 8),
+              Icon(icon, size: 18, color: Colors.black),
+              const SizedBox(width: 10),
               Text(
-                label,
+                label.toUpperCase(),
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 style: _orbitron(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 12.8,
+                  fontWeight: FontWeight.w700,
                   color: Colors.black,
                   letterSpacing: 0.5,
                 ),
@@ -477,9 +454,19 @@ class NeonPrimaryButton extends StatelessWidget {
             ],
           );
 
-    return SizedBox(
+    return Container(
       width: expand ? double.infinity : null,
       height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: kAccentGreen.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -489,7 +476,7 @@ class NeonPrimaryButton extends StatelessWidget {
           disabledForegroundColor: Colors.black54,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,
