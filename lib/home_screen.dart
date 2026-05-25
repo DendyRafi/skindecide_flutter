@@ -203,7 +203,7 @@ class _HeroSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'SKINDECIDE - ASISTEN REKOMENDASI SKIN',
+          'SKINDECIDE - Asisten Keputusan Pembelian Skin Mobile Legends',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             color: kAccentGreen,

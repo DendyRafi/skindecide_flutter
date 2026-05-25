@@ -705,6 +705,7 @@ class _AddCriterionFormState extends State<AddCriterionForm> {
                     width: fieldWidth,
                     child: DropdownButtonFormField<CriterionOptimization>(
                       value: _optimization,
+                      isExpanded: true,
                       dropdownColor: kSurfaceDark,
                       decoration: const InputDecoration(
                         labelText: 'Tipe Optimasi',
@@ -750,6 +751,7 @@ class _AddCriterionFormState extends State<AddCriterionForm> {
                     width: fieldWidth,
                     child: DropdownButtonFormField<PreferenceFunction>(
                       value: _function,
+                      isExpanded: true,
                       dropdownColor: kSurfaceDark,
                       decoration: const InputDecoration(
                         labelText: 'Fungsi Preferensi',
