@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_controller.dart';
 import 'shared_widgets.dart';
@@ -282,6 +283,7 @@ class SkinCardEditor extends StatefulWidget {
 
 class _SkinCardEditorState extends State<SkinCardEditor> {
   late final TextEditingController _nameController;
+  late final FocusNode _nameFocusNode;
   late final TextEditingController _priceController;
   late Map<String, double> _values;
 
@@ -289,6 +291,7 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.skin.name);
+    _nameFocusNode = FocusNode();
     _priceController = TextEditingController(
       text: _numericValue(widget.skin.values['price']),
     );
@@ -299,8 +302,10 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
   void didUpdateWidget(covariant SkinCardEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.skin.id != widget.skin.id ||
-        oldWidget.skin.name != widget.skin.name) {
+    if (oldWidget.skin.id != widget.skin.id) {
+      _nameController.text = widget.skin.name;
+    } else if (!_nameFocusNode.hasFocus &&
+        _nameController.text != widget.skin.name) {
       _nameController.text = widget.skin.name;
     }
 
@@ -314,6 +319,7 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
 
   @override
   void dispose() {
+    _nameFocusNode.dispose();
     _nameController.dispose();
     _priceController.dispose();
     super.dispose();
@@ -367,11 +373,14 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
               const SizedBox(height: 14),
               TextField(
                 controller: _nameController,
+                focusNode: _nameFocusNode,
                 decoration: const InputDecoration(
                   labelText: 'NAMA / VARIAN SKIN',
                   hintText: 'Misal: Gusion Cosmic Gleam',
                 ),
                 textInputAction: TextInputAction.next,
+                maxLength: 75,
+                maxLines: 1,
                 onChanged: (value) {
                   _emitChange(name: value);
                 },
@@ -794,19 +803,33 @@ class _ResultTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minWidth = mathMax(constraints.maxWidth, 360.0);
+        final tableWidth = constraints.hasBoundedWidth
+            ? mathMax(constraints.maxWidth, 360.0)
+            : 360.0;
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: minWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _ResultHeaderRow(minWidth: minWidth),
-                const SizedBox(height: 4),
-                for (final row in results) _ResultDataRow(row: row),
-              ],
+          child: SizedBox(
+            width: tableWidth,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111820).withValues(alpha: 0.90),
+                  border: Border.all(color: kBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _ResultHeaderRow(),
+                    for (var index = 0; index < results.length; index++)
+                      _ResultDataRow(
+                        row: results[index],
+                        isLast: index == results.length - 1,
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
@@ -817,53 +840,54 @@ class _ResultTable extends StatelessWidget {
 
 double mathMax(double left, double right) => left > right ? left : right;
 
-class _ResultHeaderRow extends StatelessWidget {
-  const _ResultHeaderRow({required this.minWidth});
+const double _resultRankWidth = 56;
+const double _resultMetricWidth = 66;
+const EdgeInsets _resultHeaderPadding = EdgeInsets.symmetric(
+  horizontal: 20,
+  vertical: 14,
+);
+const EdgeInsets _resultRowPadding = EdgeInsets.symmetric(
+  horizontal: 20,
+  vertical: 16,
+);
 
-  final double minWidth;
+class _ResultHeaderRow extends StatelessWidget {
+  const _ResultHeaderRow();
 
   @override
   Widget build(BuildContext context) {
-    final cellStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+    final cellStyle = GoogleFonts.jetBrainsMono(
+      fontSize: 9.4,
+      fontWeight: FontWeight.w500,
       color: kTextMuted,
-      fontWeight: FontWeight.w700,
-      letterSpacing: 0.2,
+      letterSpacing: 0.9,
+      height: 1,
     );
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0B1016),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: kBorder),
+      padding: _resultHeaderPadding,
+      decoration: const BoxDecoration(
+        color: Color(0xFF82CD27),
+        border: Border(bottom: BorderSide(color: kBorder)),
       ),
       child: Row(
         children: [
-          SizedBox(width: 30, child: Text('#', style: cellStyle)),
-          Expanded(flex: 3, child: Text('Nama Skin', style: cellStyle)),
-          SizedBox(
-            width: 88,
+          SizedBox(width: _resultRankWidth, child: Text('#', style: cellStyle)),
+          const SizedBox(width: 4),
+          Expanded(
             child: Text(
-              'Leaving Flow',
+              'Nama Skin',
               style: cellStyle,
-              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          SizedBox(
-            width: 88,
-            child: Text(
-              'Entering Flow',
-              style: cellStyle,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          SizedBox(
-            width: 78,
-            child: Text(
-              'Net Flow',
-              style: cellStyle,
-              textAlign: TextAlign.center,
-            ),
+          _ResultHeaderMetricCell(label: 'Leaving Flow', style: cellStyle),
+          _ResultHeaderMetricCell(label: 'Entering Flow', style: cellStyle),
+          _ResultHeaderMetricCell(
+            label: 'Net Flow',
+            style: cellStyle.copyWith(color: kAccentGreen),
+            align: TextAlign.right,
           ),
         ],
       ),
@@ -872,100 +896,205 @@ class _ResultHeaderRow extends StatelessWidget {
 }
 
 class _ResultDataRow extends StatelessWidget {
-  const _ResultDataRow({required this.row});
+  const _ResultDataRow({required this.row, required this.isLast});
 
   final SkinRankingRow row;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
     final isTop = row.recommended;
+    final rankStyle = isTop
+        ? GoogleFonts.orbitron(
+            fontSize: 11.2,
+            fontWeight: FontWeight.w700,
+            color: kAccentGreen,
+            letterSpacing: 0.3,
+            height: 1,
+          )
+        : GoogleFonts.jetBrainsMono(
+            fontSize: 10.8,
+            fontWeight: FontWeight.w400,
+            color: kTextMuted,
+            letterSpacing: 0.2,
+            height: 1,
+          );
+
+    final nameStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
+      color: isTop ? kAccentGreen : kTextPrimary,
+      fontWeight: isTop ? FontWeight.w700 : FontWeight.w600,
+      height: 1.25,
+    );
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: _resultRowPadding,
       decoration: BoxDecoration(
-        color: isTop
-            ? kAccentGreen.withValues(alpha: 0.10)
-            : const Color(0xFF0B1016),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: isTop ? kAccentGreen.withValues(alpha: 0.28) : kBorder,
+        color: isTop ? const Color(0x1482CD27) : const Color(0xFF0B1016),
+        border: Border(
+          bottom: BorderSide(color: isLast ? Colors.transparent : kBorder),
         ),
       ),
       child: Row(
         children: [
           SizedBox(
-            width: 30,
+            width: _resultRankWidth,
             child: Text(
               '${row.rank}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: kTextPrimary,
-                fontWeight: FontWeight.w700,
-              ),
+              style: rankStyle,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
             ),
           ),
+          const SizedBox(width: 4),
           Expanded(
-            flex: 3,
-            child: Row(
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Flexible(
-                  child: Text(
-                    row.skinName,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: kTextPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                Text(
+                  row.skinName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: nameStyle,
                 ),
-                if (isTop) ...[
-                  const SizedBox(width: 8),
-                  GlassTag(
-                    label: 'REKOMENDASI',
-                    backgroundColor: kAccentGreen,
-                    borderColor: kAccentGreen,
-                    textColor: Colors.black,
-                    fontSize: 9.8,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                  ),
-                ],
+                if (isTop) const _ResultTrophyBadge(),
               ],
             ),
           ),
-          SizedBox(
-            width: 88,
-            child: Text(
-              formatFlow(row.leavingFlow),
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: kTextPrimary),
-            ),
+          _ResultMetricCell(
+            value: formatFlow(row.leavingFlow),
+            color: kTextMuted,
           ),
-          SizedBox(
-            width: 88,
-            child: Text(
-              formatFlow(row.enteringFlow),
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: kTextPrimary),
-            ),
+          _ResultMetricCell(
+            value: formatFlow(row.enteringFlow),
+            color: kTextMuted,
           ),
-          SizedBox(
-            width: 78,
-            child: Text(
-              formatFlow(row.netFlow),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: isTop ? kAccentGreen : kTextPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+          _ResultMetricCell(
+            value: formatFlow(row.netFlow),
+            color: row.netFlow > 0
+                ? const Color(0xFF4ADE80)
+                : row.netFlow < 0
+                    ? const Color(0xFFF87171)
+                    : kTextPrimary,
+            align: TextAlign.right,
+            fontWeight: FontWeight.w700,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ResultHeaderMetricCell extends StatelessWidget {
+  const _ResultHeaderMetricCell({
+    required this.label,
+    required this.style,
+    this.align = TextAlign.center,
+  });
+
+  final String label;
+  final TextStyle style;
+  final TextAlign align;
+
+  @override
+  Widget build(BuildContext context) {
+    final alignment = align == TextAlign.right
+        ? Alignment.centerRight
+        : Alignment.center;
+
+    return SizedBox(
+      width: _resultMetricWidth,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(
+          label,
+          style: style,
+          textAlign: align,
+          maxLines: 1,
+          softWrap: false,
+        ),
+      ),
+    );
+  }
+}
+
+class _ResultMetricCell extends StatelessWidget {
+  const _ResultMetricCell({
+    required this.value,
+    required this.color,
+    this.align = TextAlign.center,
+    this.fontWeight = FontWeight.w600,
+  });
+
+  final String value;
+  final Color color;
+  final TextAlign align;
+  final FontWeight fontWeight;
+
+  @override
+  Widget build(BuildContext context) {
+    final alignment = align == TextAlign.right
+        ? Alignment.centerRight
+        : Alignment.center;
+
+    return SizedBox(
+      width: _resultMetricWidth,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(
+          value,
+          textAlign: align,
+          maxLines: 1,
+          softWrap: false,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 11,
+            fontWeight: fontWeight,
+            color: color,
+            height: 1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResultTrophyBadge extends StatelessWidget {
+  const _ResultTrophyBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0x26F0B429), Color(0x0DF0B429)],
+        ),
+        border: Border.all(color: const Color(0x40F0B429)),
+        borderRadius: BorderRadius.circular(4),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14F0B429),
+            blurRadius: 10,
+            offset: Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Text(
+        'REKOMENDASI',
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.fade,
+        style: GoogleFonts.jetBrainsMono(
+          fontSize: 8.9,
+          fontWeight: FontWeight.w700,
+          color: const Color(0xFFF0B429),
+          letterSpacing: 0.9,
+          height: 1,
+        ),
       ),
     );
   }

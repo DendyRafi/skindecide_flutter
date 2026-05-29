@@ -12,9 +12,6 @@ import 'recommendation_http_client.dart';
 const String kDefaultBackgroundAsset = 'assets/images/hero-bg.jpg';
 const String _recommendationFailureMessage =
     'Gagal memproses rekomendasi. Periksa koneksi atau server API.';
-const String _browserCorsFailureMessage =
-    'API live belum mengizinkan akses dari Flutter Web. Upload config/cors.php ke hosting Laravel lalu clear cache config.';
-
 enum CriterionKind {
   numeric,
   category6,
@@ -700,26 +697,21 @@ class SkinRecommendationApi {
   SkinRecommendationApi({http.Client? client})
     : _client = client ?? createRecommendationHttpClient();
 
-  static final Uri _httpsEndpoint = Uri.https(
+  static final Uri _endpoint = Uri.http(
     // 'pikskinmlbb.gamer.gd',
-    '127.0.0.1:8000', 
-    '/api/hitung-rekomendasi',
-  );
-  static final Uri _httpEndpoint = Uri.http(
-    // 'pikskinmlbb.gamer.gd',
-    '127.0.0.1:8000',
+    'localhost:8000',
     '/api/hitung-rekomendasi',
   );
 
   static const Map<String, String> _serverCriteriaIds = <String, String>{
-    'price': '1',
-    'category': '2',
-    'model': '3',
-    'portrait': '4',
-    'entrance': '5',
-    'effect': '6',
-    'heroPreference': '7',
-    'availability': '8',
+    'price': '57',
+    'category': '58',
+    'model': '59',
+    'portrait': '60',
+    'entrance': '61',
+    'effect': '62',
+    'heroPreference': '63',
+    'availability': '64',
   };
 
   final http.Client _client;
@@ -730,23 +722,10 @@ class SkinRecommendationApi {
     });
 
     try {
-      return await _postRecommendation(_httpsEndpoint, body);
-    } on TimeoutException {
-      return _retryHttpEndpoint(body);
-    } on http.ClientException {
-      return _retryHttpEndpoint(body);
-    }
-  }
-
-  Future<List<SkinRankingRow>> _retryHttpEndpoint(String body) async {
-    try {
-      return await _postRecommendation(_httpEndpoint, body);
+      return await _postRecommendation(_endpoint, body);
     } on TimeoutException {
       throw const SkinRecommendationException(_recommendationFailureMessage);
     } on http.ClientException {
-      if (!canSetCookieHeader) {
-        throw const SkinRecommendationException(_browserCorsFailureMessage);
-      }
       throw const SkinRecommendationException(_recommendationFailureMessage);
     }
   }

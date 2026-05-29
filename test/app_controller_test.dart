@@ -12,40 +12,30 @@ void main() {
   });
 
   test(
-    'SkinRecommendationApi posts to the fixed public API and solves hosting challenge',
+    'SkinRecommendationApi posts to the local API and returns ranking results',
     () async {
       var calls = 0;
       final api = SkinRecommendationApi(
         client: MockClient((request) async {
           calls += 1;
-          expect(request.url.host, 'pikskinmlbb.gamer.gd');
+          expect(request.url.scheme, 'http');
+          expect(request.url.host, 'localhost');
+          expect(request.url.port, 8000);
           expect(request.url.path, '/api/hitung-rekomendasi');
           expect(request.method, 'POST');
+          expect(request.headers['Accept'], 'application/json');
+          expect(request.headers['Content-Type'], 'application/json');
 
-          if (calls == 1) {
-            expect(request.url.scheme, 'https');
-            return http.Response(
-              '<html><body><script type="text/javascript" src="/aes.js" ></script><script>function toNumbers(d){var e=[];d.replace(/(..)/g,function(d){e.push(parseInt(d,16))});return e}function toHex(){for(var d=[],d=1==arguments.length&&arguments[0].constructor==Array?arguments[0]:arguments,e="",f=0;f<d.length;f++)e+=(16>d[f]?"0":"")+d[f].toString(16);return e.toLowerCase()}var a=toNumbers("f655ba9d09a112d4968c63579db590b4"),b=toNumbers("98344c2eee86c3994890592585b49f80"),c=toNumbers("0b3abfde8163548bdd993cd347cc506c");document.cookie="__test="+toHex(slowAES.decrypt(c,2,a,b))+"; max-age=21600; expires=Thu, 31-Dec-37 23:55:55 GMT; path=/"; location.href="https://pikskinmlbb.gamer.gd/api/hitung-rekomendasi?i=1";</script></body></html>',
-              200,
-              headers: <String, String>{'content-type': 'text/html'},
-            );
-          }
-
-          expect(request.url.queryParameters['i'], '1');
-          expect(
-            request.headers['Cookie'],
-            '__test=14762ecd8c060c46a5abe6505ea342e5',
-          );
           final body = jsonDecode(request.body) as Map<String, dynamic>;
           final alternatives = body['alternatives'] as List<dynamic>;
           expect(alternatives, hasLength(2));
           expect(
             (alternatives.first as Map<String, dynamic>)['scores'],
-            containsPair('1', 1000),
+            containsPair('57', 1000),
           );
           expect(
             (alternatives.first as Map<String, dynamic>)['scores'],
-            containsPair('8', 1),
+            containsPair('64', 1),
           );
 
           return http.Response(
@@ -107,7 +97,7 @@ void main() {
         ),
       ]);
 
-      expect(calls, 2);
+      expect(calls, 1);
       expect(rows.first.skinName, 'Skin B');
       expect(rows.first.rank, 1);
       expect(rows.first.netFlow, 0.5);
@@ -148,51 +138,12 @@ void main() {
   );
 
   test(
-    'SkinRecommendationApi retries HTTP only after transport failure',
+    'SkinRecommendationApi reports API connection failure when the local endpoint fails',
     () async {
       var calls = 0;
       final api = SkinRecommendationApi(
         client: MockClient((request) async {
           calls += 1;
-          if (request.url.scheme == 'https') {
-            throw http.ClientException('TLS failed', request.url);
-          }
-
-          expect(request.url.scheme, 'http');
-          return http.Response(
-            jsonEncode(<String, Object?>{
-              'status': 'success',
-              'rekomendasi': <Map<String, Object?>>[
-                <String, Object?>{
-                  'name': 'Skin A',
-                  'code': null,
-                  'leaving_flow': 0.5,
-                  'entering_flow': 0.1,
-                  'net_flow': 0.4,
-                  'rank': 1,
-                },
-              ],
-            }),
-            200,
-            headers: <String, String>{'content-type': 'application/json'},
-          );
-        }),
-      );
-
-      final rows = await api.calculate(<SkinDraft>[
-        _completeSkin('skin-a', 'Skin A'),
-      ]);
-
-      expect(calls, 2);
-      expect(rows.single.recommended, isTrue);
-    },
-  );
-
-  test(
-    'SkinRecommendationApi reports API connection failure when both endpoints fail',
-    () async {
-      final api = SkinRecommendationApi(
-        client: MockClient((request) async {
           throw http.ClientException('network blocked', request.url);
         }),
       );
@@ -207,6 +158,7 @@ void main() {
           ),
         ),
       );
+      expect(calls, 1);
     },
   );
 
