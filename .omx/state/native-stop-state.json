@@ -1,0 +1,24 @@
+{
+  "sessions": {
+    "019e6a72-b974-7f42-8ae3-15e52aa86575": {
+      "ordinary_no_progress_guard": {
+        "fingerprint": "ordinary|i inspected the repo: it’s a flutter app with no backend/bot scaffold yet. to set up a discord bot correctly, i need one key decision: do you want the discord bot set up as **a separate node.js/python service in this repo**, or do you want **discord integration inside the flutter app**?",
+        "first_seen_at": "2026-05-27T17:20:08.702Z",
+        "last_seen_at": "2026-05-27T17:20:08.702Z",
+        "repeat_count": 1,
+        "last_turn_id": "019e6a72-eac0-74c2-940e-3f4ca54d3925",
+        "last_thread_id": null
+      }
+    },
+    "019e6a75-aa49-7670-8ad1-da3c764264cd": {
+      "ordinary_no_progress_guard": {
+        "fingerprint": "ordinary|not exactly. `--discord` does **not** mean “use project `.codex` config instead of global config.” it means: > “activate temporary notification mode and select the discord provider for this one omx run.” in that temp mode, omx intentionally shows: ```text persistent-routing=bypassed ``` so it bypasses normal persistent notification routing/config, including your saved global config. ### normal persistent config your working config is here: ```text c:\\users\\rizlrad fz\\.codex\\.omx-config.json ``` use: ```powershell omx ``` not: ```powershell omx --discord ``` ### `--discord` temp mode use `--discord` only when you want to provide discord credentials through environment variables for that run, for example: ```powershell $env:omx_discord_webhook_url = \"https://discord.com/api/webhooks/...\" omx --discord ``` or bot: ```powershell $env:omx_discord_notifier_bot_token = \"...\" $env:omx_discord_notifier_channel = \"1509246079923785819\" omx --discord ``` ### project `.codex` config? based on the installed omx code i inspected, notification config is read from codex home: ```text codexhome()/.omx-config.json ``` usually: ```text c:\\users\\rizlrad fz\\.codex\\.omx-config.json ``` not from the project’s `.codex` folder for `--discord`. so the short version: | command | uses persistent config? | needs env vars? | |---|---:|---:| | `omx` | yes | no | | `omx --discord` | no, bypasses persistent routing | yes | | `omx --notify-temp --discord` | no, temp mode | yes | use plain `omx` for your configured discord setup.",
+        "first_seen_at": "2026-05-27T18:21:29.250Z",
+        "last_seen_at": "2026-05-27T18:21:29.250Z",
+        "repeat_count": 1,
+        "last_turn_id": "019e6aab-584e-7852-a6b0-0b933feebc37",
+        "last_thread_id": null
+      }
+    }
+  }
+}

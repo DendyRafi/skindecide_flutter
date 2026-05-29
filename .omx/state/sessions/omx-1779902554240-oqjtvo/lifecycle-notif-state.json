@@ -1,0 +1,8 @@
+{
+  "events": {
+    "session-end": {
+      "fingerprint": "{\"event\":\"session-end\",\"reason\":\"session_exit\",\"activeMode\":\"\",\"question\":\"\",\"incompleteTasks\":0}",
+      "sentAt": "2026-05-27T18:16:24.621Z"
+    }
+  }
+}

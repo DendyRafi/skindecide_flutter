@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _calculate() {
+  Future<void> _calculate() async {
     final controller = AppController.of(context);
     final validation = controller.validateComparisonInputs();
     if (validation != null) {
@@ -28,18 +28,27 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    controller.calculateRanking();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final resultContext = _resultsKey.currentContext;
-      if (resultContext != null) {
-        Scrollable.ensureVisible(
-          resultContext,
-          duration: const Duration(milliseconds: 450),
-          curve: Curves.easeOutCubic,
-          alignment: 0.08,
-        );
+    try {
+      await controller.calculateRanking();
+      if (!mounted) {
+        return;
       }
-    });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final resultContext = _resultsKey.currentContext;
+        if (resultContext != null) {
+          Scrollable.ensureVisible(
+            resultContext,
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            alignment: 0.08,
+          );
+        }
+      });
+    } on SkinRecommendationException catch (error) {
+      if (mounted) {
+        _showMessage(error.message);
+      }
+    }
   }
 
   @override
@@ -93,51 +102,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final narrow = constraints.maxWidth < 320;
+                        final resetButton = NeonSecondaryButton(
+                          label: 'Hapus Input Tersimpan',
+                          icon: Icons.delete_outline_rounded,
+                          expand: true,
+                          onPressed: controller.resetComparisonInputs,
+                        );
+                        final calculateButton = NeonPrimaryButton(
+                          label: controller.isCalculating
+                              ? 'Menghitung...'
+                              : 'Hitung Rekomendasi',
+                          icon: controller.isCalculating
+                              ? Icons.hourglass_top_rounded
+                              : Icons.analytics_rounded,
+                          expand: true,
+                          onPressed: controller.isCalculating
+                              ? null
+                              : _calculate,
+                        );
+
                         if (narrow) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              NeonSecondaryButton(
-                                label: 'Hapus Input Tersimpan',
-                                icon: Icons.delete_outline_rounded,
-                                expand: true,
-                                onPressed: controller.resetComparisonInputs,
-                              ),
+                              resetButton,
                               const SizedBox(height: 10),
-                              NeonPrimaryButton(
-                                label: 'Hitung Rekomendasi',
-                                icon: Icons.analytics_rounded,
-                                expand: true,
-                                onPressed: _calculate,
-                              ),
+                              calculateButton,
                             ],
                           );
                         }
 
                         return Row(
                           children: [
-                            Expanded(
-                              child: NeonSecondaryButton(
-                                label: 'Hapus Input Tersimpan',
-                                icon: Icons.delete_outline_rounded,
-                                expand: true,
-                                onPressed: controller.resetComparisonInputs,
-                              ),
-                            ),
+                            Expanded(child: resetButton),
                             const SizedBox(width: 12),
-                            Expanded(
-                              child: NeonPrimaryButton(
-                                label: 'Hitung Rekomendasi',
-                                icon: Icons.analytics_rounded,
-                                expand: true,
-                                onPressed: _calculate,
-                              ),
-                            ),
+                            Expanded(child: calculateButton),
                           ],
                         );
                       },
                     ),
                     const SizedBox(height: 20),
+                    if (controller.calculationError != null) ...[
+                      const SizedBox(height: 12),
+                      _CalculationErrorPanel(
+                        message: controller.calculationError!,
+                      ),
+                    ],
                     if (controller.results.isNotEmpty)
                       ResultPanel(
                         key: _resultsKey,
@@ -228,7 +238,7 @@ class _HeroSection extends StatelessWidget {
           'Masukkan nama skin yang ingin dibandingkan beserta penilaian kriteria kamu',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: kTextPrimary.withOpacity(0.9),
+            color: kTextPrimary.withValues(alpha: 0.9),
             height: 1.5,
             fontSize: 13.5,
           ),
@@ -238,7 +248,7 @@ class _HeroSection extends StatelessWidget {
           '(Masukkan Skala 1-7, khusus Kategori masukkan skala 1-6, dan untuk Harga masukkan dalam jumlah Diamond)',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: kTextMuted.withOpacity(0.85),
+            color: kTextMuted.withValues(alpha: 0.85),
             height: 1.5,
             fontSize: 10.5,
           ),
@@ -377,10 +387,12 @@ class _SkinCardEditorState extends State<SkinCardEditor> {
                     });
                     _emitChange(values: _values);
                   },
-                  priceController:
-                      criterion.id == 'price' ? _priceController : null,
-                  onPriceChanged:
-                      criterion.id == 'price' ? _handlePriceChanged : null,
+                  priceController: criterion.id == 'price'
+                      ? _priceController
+                      : null,
+                  onPriceChanged: criterion.id == 'price'
+                      ? _handlePriceChanged
+                      : null,
                   showHint: criterion.id == 'price',
                 ),
                 const SizedBox(height: 18),
@@ -467,7 +479,7 @@ class _CriterionField extends StatelessWidget {
       case CriterionKind.heroPreference7:
       case CriterionKind.availability2:
         field = DropdownButtonFormField<double>(
-          value: value,
+          initialValue: value,
           dropdownColor: kSurfaceDark,
           isExpanded: true,
           decoration: InputDecoration(labelText: label),
@@ -561,42 +573,6 @@ class _OptionEntry {
   final String label;
 }
 
-class _CornerFrameLabel extends StatelessWidget {
-  const _CornerFrameLabel({required this.index});
-
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 22,
-      constraints: const BoxConstraints(minWidth: 64),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: kAccentGreen,
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-            color: kAccentGreen.withOpacity(0.26),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        'SKIN $index',
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: Colors.black,
-          fontSize: 10.5,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-}
-
 class _CornerAccent extends StatelessWidget {
   const _CornerAccent({this.topLeft = false, this.bottomLeft = false});
 
@@ -625,6 +601,41 @@ class _CornerAccent extends StatelessWidget {
                 : const BorderSide(color: kAccentGreen),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CalculationErrorPanel extends StatelessWidget {
+  const _CalculationErrorPanel({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppPanel(
+      borderColor: const Color(0xFFFF5A5F).withValues(alpha: 0.32),
+      backgroundColor: const Color(0xFF1A1114),
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Color(0xFFFF8A8E),
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: const Color(0xFFFFC8CB),
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -716,7 +727,7 @@ class _ResultSummaryCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF0B1016),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: kAccentGreen.withOpacity(0.28)),
+            border: Border.all(color: kAccentGreen.withValues(alpha: 0.28)),
           ),
           child: isNarrow
               ? Column(
@@ -729,7 +740,7 @@ class _ResultSummaryCard extends StatelessWidget {
                           width: 52,
                           height: 52,
                           decoration: BoxDecoration(
-                            color: kAccentGreen.withOpacity(0.15),
+                            color: kAccentGreen.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: const Icon(
@@ -753,7 +764,7 @@ class _ResultSummaryCard extends StatelessWidget {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: kAccentGreen.withOpacity(0.15),
+                        color: kAccentGreen.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(
@@ -872,10 +883,12 @@ class _ResultDataRow extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
-        color: isTop ? kAccentGreen.withOpacity(0.10) : const Color(0xFF0B1016),
+        color: isTop
+            ? kAccentGreen.withValues(alpha: 0.10)
+            : const Color(0xFF0B1016),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: isTop ? kAccentGreen.withOpacity(0.28) : kBorder,
+          color: isTop ? kAccentGreen.withValues(alpha: 0.28) : kBorder,
         ),
       ),
       child: Row(

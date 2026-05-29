@@ -47,24 +47,6 @@ TextStyle _orbitron({
   );
 }
 
-TextStyle _mono({
-  required double fontSize,
-  FontWeight fontWeight = FontWeight.w500,
-  Color color = kTextPrimary,
-  double? letterSpacing,
-  double? height,
-}) {
-  return GoogleFonts.jetBrainsMono(
-    textStyle: TextStyle(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
-      letterSpacing: letterSpacing,
-      height: height,
-    ),
-  );
-}
-
 ThemeData buildAppTheme() {
   final base = ThemeData.dark(useMaterial3: true);
 
@@ -121,7 +103,10 @@ ThemeData buildAppTheme() {
       fillColor: const Color(0xFF0B1016),
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
-      hintStyle: _syne(fontSize: 12.5, color: kTextMuted.withOpacity(0.7)),
+      hintStyle: _syne(
+        fontSize: 12.5,
+        color: kTextMuted.withValues(alpha: 0.7),
+      ),
       labelStyle: _syne(
         fontSize: 10.5,
         fontWeight: FontWeight.w700,
@@ -148,13 +133,13 @@ ThemeData buildAppTheme() {
       ),
     ),
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return kAccentGreen;
         }
         return Colors.transparent;
       }),
-      checkColor: const MaterialStatePropertyAll(Colors.black),
+      checkColor: const WidgetStatePropertyAll(Colors.black),
       side: const BorderSide(color: kBorder),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
@@ -198,7 +183,7 @@ class AppBackdrop extends StatelessWidget {
           top: -20,
           child: _GlowOrb(
             size: 300,
-            colors: [kAccentGreen.withOpacity(0.12), Colors.transparent],
+            colors: [kAccentGreen.withValues(alpha: 0.12), Colors.transparent],
           ),
         ),
         Positioned(
@@ -207,7 +192,7 @@ class AppBackdrop extends StatelessWidget {
           child: _GlowOrb(
             size: 350,
             colors: [
-              const Color(0xFF8A5BD8).withOpacity(0.08),
+              const Color(0xFF8A5BD8).withValues(alpha: 0.08),
               Colors.transparent,
             ],
           ),
@@ -461,7 +446,7 @@ class NeonPrimaryButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: kAccentGreen.withOpacity(0.3),
+            color: kAccentGreen.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -472,7 +457,7 @@ class NeonPrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: kAccentGreen,
           foregroundColor: Colors.black,
-          disabledBackgroundColor: kAccentGreen.withOpacity(0.45),
+          disabledBackgroundColor: kAccentGreen.withValues(alpha: 0.45),
           disabledForegroundColor: Colors.black54,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

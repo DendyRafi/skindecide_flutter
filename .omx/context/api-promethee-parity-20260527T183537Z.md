@@ -1,0 +1,28 @@
+# Context Snapshot: api-promethee-parity
+
+- Task statement: Analyze Flutter SkinDecide repo and Laravel API project, then make Flutter use API to calculate PROMETHEE alternatives with UI/results matching http://pikskinmlbb.gamer.gd/.
+- Desired outcome: Flutter calculation flow posts alternatives to API, displays recommendation table with rank/leaving_flow/entering_flow/net_flow like the web, and verification proves API integration and UI behavior.
+- Stated solution: Use API from Laravel project C:\Users\Rizlrad Fz\Koding\Laravel\pojek-sepek; web source is http://pikskinmlbb.gamer.gd/.
+- Probable intent hypothesis: Replace divergent local Flutter PROMETHEE implementation with the same server calculation used by the web so results match.
+- Known facts/evidence:
+  - Flutter currently calculates locally in lib/app_controller.dart:526-653.
+  - Flutter has no HTTP dependency in pubspec.yaml and no API strings found in lib.
+  - Laravel route routes/api.php defines POST /api/hitung-rekomendasi to SkinRecommendationController.
+  - Laravel controller validates alternatives and scores, loads Criteria from DB, returns JSON {status, rekomendasi}.
+  - Laravel web JS posts to /api/hitung-rekomendasi and renders leaving_flow, entering_flow, net_flow in resources/js/welcome.js:387-474.
+  - Live API test through Invoke-WebRequest returned a JS cookie challenge HTML instead of JSON for plain HTTP client.
+- Constraints:
+  - Must preserve existing Flutter UI style while aligning result behavior with web.
+  - No completion claim without fresh verification.
+  - Ralph/ai-slop-cleaner require deslop and regression re-verification after edits.
+- Unknowns/open questions:
+  - Which API base URL should Flutter target in dev/build, given live site JS gate.
+  - Whether offline/local calculation fallback is allowed or should be removed to avoid mismatch.
+  - Whether admin criteria/settings in Flutter must become API-backed or remain local for this pass.
+- Decision-boundary unknowns:
+  - Can OMX choose configurable API base URL + local Laravel default for dev and live URL for release?
+  - Can OMX remove/stop using local calculation path if API succeeds?
+- Likely codebase touchpoints:
+  - Flutter: pubspec.yaml, lib/app_controller.dart, lib/home_screen.dart, tests.
+  - Laravel evidence only: routes/api.php, app/Http/Controllers/SkinRecommendationController.php, app/Libraries/Promethee.php, resources/js/welcome.js.
+- Prompt-safe initial-context summary status: not_needed

@@ -104,19 +104,20 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                     Text(
                       'Login Admin',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: kTextPrimary,
-                        letterSpacing: 0.5,
-                        fontSize: 26,
-                        height: 1.2,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: kTextPrimary,
+                            letterSpacing: 0.5,
+                            fontSize: 26,
+                            height: 1.2,
+                          ),
                     ),
                     const SizedBox(height: 14),
                     Text(
                       'Masuk untuk mengatur kriteria rekomendasi dan reset password admin.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: kTextPrimary.withOpacity(0.9),
+                        color: kTextPrimary.withValues(alpha: 0.9),
                         height: 1.5,
                         fontSize: 13.5,
                       ),
@@ -148,7 +149,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           const SizedBox(height: 10),
                           Theme(
                             data: Theme.of(context).copyWith(
-                              checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
+                              checkboxTheme: Theme.of(context).checkboxTheme
+                                  .copyWith(
                                     visualDensity: VisualDensity.compact,
                                   ),
                             ),
@@ -171,7 +173,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           ),
                           const SizedBox(height: 18),
                           NeonPrimaryButton(
-                            label: _isSubmitting ? 'Memproses...' : 'LOGIN ADMIN',
+                            label: _isSubmitting
+                                ? 'Memproses...'
+                                : 'LOGIN ADMIN',
                             expand: true,
                             onPressed: _isSubmitting ? null : _submit,
                           ),
@@ -219,6 +223,9 @@ class AdminSettingsScreen extends StatelessWidget {
 
     if (shouldReset == true) {
       controller.resetCriteria();
+      if (!context.mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Kriteria berhasil dikembalikan ke nilai awal.'),
@@ -283,7 +290,10 @@ class AdminSettingsScreen extends StatelessWidget {
                         GlassTag(
                           label: 'Admin: ${controller.adminDisplayName}',
                           fontSize: 9.5,
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                         ),
                       ],
                     ),
@@ -302,19 +312,20 @@ class AdminSettingsScreen extends StatelessWidget {
                     Text(
                       'Pengaturan Kriteria',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: kTextPrimary,
-                        letterSpacing: 0.5,
-                        fontSize: 26,
-                        height: 1.2,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: kTextPrimary,
+                            letterSpacing: 0.5,
+                            fontSize: 26,
+                            height: 1.2,
+                          ),
                     ),
                     const SizedBox(height: 14),
                     Text(
                       'Sesuaikan tipe kriteria, bobot kepentingan, serta tipe fungsi preferensi PROMETHEE beserta batas threshold (p, q, s).',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: kTextPrimary.withOpacity(0.9),
+                        color: kTextPrimary.withValues(alpha: 0.9),
                         height: 1.5,
                         fontSize: 13.5,
                       ),
@@ -327,18 +338,14 @@ class AdminSettingsScreen extends StatelessWidget {
                         children: [
                           Text(
                             'Kontrol Admin',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: kTextPrimary,
-                              fontSize: 18,
-                            ),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(color: kTextPrimary, fontSize: 18),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Gunakan reset untuk mengembalikan daftar kriteria ke nilai awal sistem.',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: kTextMuted,
-                              height: 1.4,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: kTextMuted, height: 1.4),
                           ),
                           const SizedBox(height: 18),
                           NeonSecondaryButton(
@@ -496,9 +503,10 @@ class _CriterionCardEditorState extends State<CriterionCardEditor> {
                           _optimization == CriterionOptimization.maximize
                           ? const Color(0xFF14210E)
                           : const Color(0xFF231B11),
-                      borderColor: _optimization == CriterionOptimization.maximize
-                          ? kAccentGreen.withOpacity(0.35)
-                          : Colors.orange.withOpacity(0.35),
+                      borderColor:
+                          _optimization == CriterionOptimization.maximize
+                          ? kAccentGreen.withValues(alpha: 0.35)
+                          : Colors.orange.withValues(alpha: 0.35),
                       textColor: _optimization == CriterionOptimization.maximize
                           ? kAccentGreen
                           : Colors.orangeAccent,
@@ -523,18 +531,14 @@ class _CriterionCardEditorState extends State<CriterionCardEditor> {
           const SizedBox(height: 20),
           TextField(
             controller: _labelController,
-            decoration: const InputDecoration(
-              labelText: 'NAMA KRITERIA',
-            ),
+            decoration: const InputDecoration(labelText: 'NAMA KRITERIA'),
           ),
           const SizedBox(height: 18),
           DropdownButtonFormField<CriterionOptimization>(
-            value: _optimization,
+            initialValue: _optimization,
             dropdownColor: kSurfaceDark,
             isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'TIPE OPTIMASI',
-            ),
+            decoration: const InputDecoration(labelText: 'TIPE OPTIMASI'),
             items: CriterionOptimization.values
                 .map(
                   (value) => DropdownMenuItem<CriterionOptimization>(
@@ -559,24 +563,18 @@ class _CriterionCardEditorState extends State<CriterionCardEditor> {
           const SizedBox(height: 18),
           TextField(
             controller: _weightController,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
             ],
-            decoration: const InputDecoration(
-              labelText: 'BOBOT (WEIGHT)',
-            ),
+            decoration: const InputDecoration(labelText: 'BOBOT (WEIGHT)'),
           ),
           const SizedBox(height: 18),
           DropdownButtonFormField<PreferenceFunction>(
-            value: _function,
+            initialValue: _function,
             dropdownColor: kSurfaceDark,
             isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'FUNGSI PREFERENSI',
-            ),
+            decoration: const InputDecoration(labelText: 'FUNGSI PREFERENSI'),
             items: PreferenceFunction.values
                 .map(
                   (value) => DropdownMenuItem<PreferenceFunction>(
@@ -598,18 +596,16 @@ class _CriterionCardEditorState extends State<CriterionCardEditor> {
           Row(
             children: [
               Expanded(
-                child: NeonPrimaryButton(
-                  label: 'SIMPAN',
-                  onPressed: _save,
-                ),
+                child: NeonPrimaryButton(label: 'SIMPAN', onPressed: _save),
               ),
               if (_isCore) ...[
                 const SizedBox(width: 12),
                 Text(
                   'Kriteria inti sistem',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: kTextMuted, fontSize: 10),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: kTextMuted,
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ],
@@ -704,7 +700,7 @@ class _AddCriterionFormState extends State<AddCriterionForm> {
                   SizedBox(
                     width: fieldWidth,
                     child: DropdownButtonFormField<CriterionOptimization>(
-                      value: _optimization,
+                      initialValue: _optimization,
                       isExpanded: true,
                       dropdownColor: kSurfaceDark,
                       decoration: const InputDecoration(
@@ -750,7 +746,7 @@ class _AddCriterionFormState extends State<AddCriterionForm> {
                   SizedBox(
                     width: fieldWidth,
                     child: DropdownButtonFormField<PreferenceFunction>(
-                      value: _function,
+                      initialValue: _function,
                       isExpanded: true,
                       dropdownColor: kSurfaceDark,
                       decoration: const InputDecoration(
@@ -942,8 +938,12 @@ class _CustomBackgroundScreenState extends State<CustomBackgroundScreen> {
                                               begin: Alignment.topCenter,
                                               end: Alignment.bottomCenter,
                                               colors: [
-                                                Colors.black.withOpacity(0.25),
-                                                Colors.black.withOpacity(0.65),
+                                                Colors.black.withValues(
+                                                  alpha: 0.25,
+                                                ),
+                                                Colors.black.withValues(
+                                                  alpha: 0.65,
+                                                ),
                                               ],
                                             ),
                                           ),
