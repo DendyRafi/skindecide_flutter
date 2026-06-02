@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_controller.dart';
 import 'shared_widgets.dart';
+import 'chatbot_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,15 +56,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = AppController.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= kBreakpointDesktop;
+    final isTablet =
+        screenWidth >= kBreakpointTablet && screenWidth < kBreakpointDesktop;
+
+    final contentMaxWidth = isDesktop ? 1100.0 : isTablet ? 720.0 : 430.0;
+    final horizontalPadding = isDesktop ? 32.0 : isTablet ? 24.0 : 16.0;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF00FF66),
+        child: const Icon(Icons.chat_bubble, color: Color(0xFF050B14)),
+        onPressed: () {
+          // Navigasi langsung ke kelas halaman Chatbot tanpa lewat NamedRoute
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatbotPage()),
+          );
+        },
+      ),
       body: AppBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              14,
+              horizontalPadding,
+              24,
+            ),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 430),
+                constraints: BoxConstraints(maxWidth: contentMaxWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -74,24 +98,65 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 26),
                     const _HeroSection(),
                     const SizedBox(height: 24),
-                    for (
-                      var index = 0;
-                      index < controller.skins.length;
-                      index++
-                    ) ...[
-                      SkinCardEditor(
-                        key: ValueKey(controller.skins[index].id),
-                        index: index,
-                        skin: controller.skins[index],
-                        criteria: controller.criteria,
-                        onChanged: controller.updateSkin,
-                        onRemove: () =>
-                            controller.removeSkin(controller.skins[index].id),
-                        canRemove: controller.skins.length > 2,
-                      ),
-                      if (index != controller.skins.length - 1)
-                        const SizedBox(height: 18),
-                    ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final useGrid = constraints.maxWidth >= 640;
+
+                        if (useGrid) {
+                          final cardWidth = (constraints.maxWidth - 18) / 2;
+                          return Wrap(
+                            spacing: 18,
+                            runSpacing: 18,
+                            children: [
+                              for (
+                                var index = 0;
+                                index < controller.skins.length;
+                                index++
+                              )
+                                SizedBox(
+                                  width: cardWidth,
+                                  child: SkinCardEditor(
+                                    key: ValueKey(controller.skins[index].id),
+                                    index: index,
+                                    skin: controller.skins[index],
+                                    criteria: controller.criteria,
+                                    onChanged: controller.updateSkin,
+                                    onRemove: () => controller.removeSkin(
+                                      controller.skins[index].id,
+                                    ),
+                                    canRemove: controller.skins.length > 2,
+                                  ),
+                                ),
+                            ],
+                          );
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (
+                              var index = 0;
+                              index < controller.skins.length;
+                              index++
+                            ) ...[
+                              SkinCardEditor(
+                                key: ValueKey(controller.skins[index].id),
+                                index: index,
+                                skin: controller.skins[index],
+                                criteria: controller.criteria,
+                                onChanged: controller.updateSkin,
+                                onRemove: () => controller.removeSkin(
+                                  controller.skins[index].id,
+                                ),
+                                canRemove: controller.skins.length > 2,
+                              ),
+                              if (index != controller.skins.length - 1)
+                                const SizedBox(height: 18),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
                     const SizedBox(height: 18),
                     NeonSecondaryButton(
                       label: 'Tambah Pilihan Skin',
@@ -217,42 +282,42 @@ class _HeroSection extends StatelessWidget {
           'SKINDECIDE - Asisten Keputusan Pembelian Skin Mobile Legends',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: kAccentGreen,
-            letterSpacing: 1.5,
-            fontWeight: FontWeight.w600,
-            fontSize: 11,
-          ),
+                color: kAccentGreen,
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
+              ),
         ),
         const SizedBox(height: 12),
         Text(
           'Rekomendasi Skin Terbaik',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: kTextPrimary,
-            letterSpacing: 0.5,
-            fontSize: 26,
-            height: 1.2,
-          ),
+                color: kTextPrimary,
+                letterSpacing: 0.5,
+                fontSize: 26,
+                height: 1.2,
+              ),
         ),
         const SizedBox(height: 14),
         Text(
           'Masukkan nama skin yang ingin dibandingkan beserta penilaian kriteria kamu',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: kTextPrimary.withValues(alpha: 0.9),
-            height: 1.5,
-            fontSize: 13.5,
-          ),
+                color: kTextPrimary.withValues(alpha: 0.9),
+                height: 1.5,
+                fontSize: 13.5,
+              ),
         ),
         const SizedBox(height: 10),
         Text(
           '(Masukkan Skala 1-7, khusus Kategori masukkan skala 1-6, dan untuk Harga masukkan dalam jumlah Diamond)',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: kTextMuted.withValues(alpha: 0.85),
-            height: 1.5,
-            fontSize: 10.5,
-          ),
+                color: kTextMuted.withValues(alpha: 0.85),
+                height: 1.5,
+                fontSize: 10.5,
+              ),
         ),
       ],
     );
@@ -522,10 +587,10 @@ class _CriterionField extends StatelessWidget {
           Text(
             'Gacha: estimasi pity (Zodiac ~1500 · Collector ~4000 · Aspirants ~5000 · Legend ~9000)',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: kTextMuted,
-              fontSize: 9.6,
-              height: 1.3,
-            ),
+                  color: kTextMuted,
+                  fontSize: 9.6,
+                  height: 1.3,
+                ),
           ),
         ],
       ],
@@ -535,41 +600,44 @@ class _CriterionField extends StatelessWidget {
   List<_OptionEntry> _buildOptions(CriterionDefinition criterion) {
     return switch (criterion.kind) {
       CriterionKind.category6 => const [
-        _OptionEntry(1, 'Common (Basic / Elite / Season)'),
-        _OptionEntry(2, 'Exceptional (Special / Starlight Regular)'),
-        _OptionEntry(3, 'Deluxe (Epic Shop / Epic Squad Series / Zodiac)'),
-        _OptionEntry(
-          4,
-          'Exquisite (Epic Limited / Collector / Lucky Box / Starlight Annual)',
-        ),
-        _OptionEntry(
-          5,
-          'Grand (Collab Anime/Movie, Aspirants, Exorcists, Mistbenders)',
-        ),
-        _OptionEntry(6, 'Legend (Legend Magic Wheel / Legend Limited Event)'),
-      ],
+          _OptionEntry(1, 'Common (Basic / Elite / Season)'),
+          _OptionEntry(2, 'Exceptional (Special / Starlight Regular)'),
+          _OptionEntry(3, 'Deluxe (Epic Shop / Epic Squad Series / Zodiac)'),
+          _OptionEntry(
+            4,
+            'Exquisite (Epic Limited / Collector / Lucky Box / Starlight Annual)',
+          ),
+          _OptionEntry(
+            5,
+            'Grand (Collab Anime/Movie, Aspirants, Exorcists, Mistbenders)',
+          ),
+          _OptionEntry(6, 'Legend (Legend Magic Wheel / Legend Limited Event)'),
+        ],
       CriterionKind.rating7 => const [
-        _OptionEntry(1, 'Sangat Kurang'),
-        _OptionEntry(2, 'Kurang'),
-        _OptionEntry(3, 'Agak Kurang'),
-        _OptionEntry(4, 'Standar'),
-        _OptionEntry(5, 'Lumayan Bagus'),
-        _OptionEntry(6, 'Bagus'),
-        _OptionEntry(7, 'Sangat Bagus'),
-      ],
+          _OptionEntry(1, 'Sangat Kurang'),
+          _OptionEntry(2, 'Kurang'),
+          _OptionEntry(3, 'Agak Kurang'),
+          _OptionEntry(4, 'Standar'),
+          _OptionEntry(5, 'Lumayan Bagus'),
+          _OptionEntry(6, 'Bagus'),
+          _OptionEntry(7, 'Sangat Bagus'),
+        ],
       CriterionKind.heroPreference7 => const [
-        _OptionEntry(1, 'Tidak Pernah Dipakai'),
-        _OptionEntry(2, 'Sangat Jarang Dipakai'),
-        _OptionEntry(3, 'Jarang Dipakai'),
-        _OptionEntry(4, 'Kadang-kadang'),
-        _OptionEntry(5, 'Sering Dipakai'),
-        _OptionEntry(6, 'Sangat Sering Dipakai'),
-        _OptionEntry(7, 'Hero Andalan Utama (Signature)'),
-      ],
+          _OptionEntry(1, 'Tidak Pernah Dipakai'),
+          _OptionEntry(2, 'Sangat Jarang Dipakai'),
+          _OptionEntry(3, 'Jarang Dipakai'),
+          _OptionEntry(4, 'Kadang-kadang'),
+          _OptionEntry(5, 'Sering Dipakai'),
+          _OptionEntry(6, 'Sangat Sering Dipakai'),
+          _OptionEntry(7, 'Hero Andalan Utama (Signature)'),
+        ],
       CriterionKind.availability2 => const [
-        _OptionEntry(1, 'Dapat Dibeli Kapan Saja di Shop'),
-        _OptionEntry(2, 'Hanya Bisa Dibeli Saat Event Berlangsung (Limited)'),
-      ],
+          _OptionEntry(1, 'Dapat Dibeli Kapan Saja di Shop'),
+          _OptionEntry(
+            2,
+            'Hanya Bisa Dibeli Saat Event Berlangsung (Limited)',
+          ),
+        ],
       CriterionKind.numeric => const <_OptionEntry>[],
     };
   }
@@ -639,9 +707,9 @@ class _CalculationErrorPanel extends StatelessWidget {
             child: Text(
               message,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: const Color(0xFFFFC8CB),
-                height: 1.45,
-              ),
+                    color: const Color(0xFFFFC8CB),
+                    height: 1.45,
+                  ),
             ),
           ),
         ],
@@ -671,9 +739,9 @@ class ResultPanel extends StatelessWidget {
               Text(
                 'Hasil Peringkat',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: kTextPrimary,
-                  fontSize: 17,
-                ),
+                      color: kTextPrimary,
+                      fontSize: 17,
+                    ),
               ),
               const Spacer(),
               GlassTag(
@@ -710,9 +778,9 @@ class _ResultSummaryCard extends StatelessWidget {
             Text(
               row.skinName,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: kTextPrimary,
-                fontSize: 16,
-              ),
+                    color: kTextPrimary,
+                    fontSize: 16,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -921,10 +989,10 @@ class _ResultDataRow extends StatelessWidget {
           );
 
     final nameStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-      color: isTop ? kAccentGreen : kTextPrimary,
-      fontWeight: isTop ? FontWeight.w700 : FontWeight.w600,
-      height: 1.25,
-    );
+          color: isTop ? kAccentGreen : kTextPrimary,
+          fontWeight: isTop ? FontWeight.w700 : FontWeight.w600,
+          height: 1.25,
+        );
 
     return Container(
       padding: _resultRowPadding,

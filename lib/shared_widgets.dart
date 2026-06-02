@@ -10,6 +10,8 @@ const Color kSurfaceInk = Color(0xFF091116);
 const Color kTextPrimary = Color(0xFFE8EDF3);
 const Color kTextMuted = Color(0xFF5A6A7A);
 const Color kBorder = Color.fromRGBO(255, 255, 255, 0.07);
+const double kBreakpointTablet = 600.0;   // >= 600px = tablet
+const double kBreakpointDesktop = 960.0;  // >= 960px = desktop
 
 TextStyle _syne({
   required double fontSize,

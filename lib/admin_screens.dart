@@ -43,7 +43,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     setState(() {
       _isSubmitting = true;
     });
-
     final controller = AppController.of(context);
     final success = await controller.loginAdmin(
       _usernameController.text,
@@ -69,14 +68,24 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= kBreakpointTablet;
+    final horizontalPadding = isTablet ? 24.0 : 16.0;
+
     return Scaffold(
       body: AppBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              14,
+              horizontalPadding,
+              24,
+            ),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 430),
+                // Login form tetap sempit – max 520 di tablet, 430 di mobile
+                constraints: BoxConstraints(maxWidth: isTablet ? 520.0 : 430.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -237,15 +246,27 @@ class AdminSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AppController.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= kBreakpointDesktop;
+    final isTablet =
+        screenWidth >= kBreakpointTablet && screenWidth < kBreakpointDesktop;
+
+    final contentMaxWidth = isDesktop ? 1100.0 : isTablet ? 720.0 : 430.0;
+    final horizontalPadding = isDesktop ? 32.0 : isTablet ? 24.0 : 16.0;
 
     return Scaffold(
       body: AppBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              14,
+              horizontalPadding,
+              24,
+            ),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 430),
+                constraints: BoxConstraints(maxWidth: contentMaxWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -366,16 +387,50 @@ class AdminSettingsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    for (final criterion in controller.criteria) ...[
-                      CriterionCardEditor(
-                        key: ValueKey(criterion.id),
-                        criterion: criterion,
-                        onSave: controller.updateCriterion,
-                        onDelete: () =>
-                            controller.removeCriterion(criterion.id),
-                      ),
-                      const SizedBox(height: 18),
-                    ],
+                    // ── Criterion cards: 2-kolom di desktop/tablet lebar ──
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final useGrid = constraints.maxWidth >= 640;
+
+                        if (useGrid) {
+                          final cardWidth = (constraints.maxWidth - 18) / 2;
+                          return Wrap(
+                            spacing: 18,
+                            runSpacing: 18,
+                            children: [
+                              for (final criterion in controller.criteria)
+                                SizedBox(
+                                  width: cardWidth,
+                                  child: CriterionCardEditor(
+                                    key: ValueKey(criterion.id),
+                                    criterion: criterion,
+                                    onSave: controller.updateCriterion,
+                                    onDelete: () =>
+                                        controller.removeCriterion(criterion.id),
+                                  ),
+                                ),
+                            ],
+                          );
+                        }
+
+                        // Mobile: single column
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (final criterion in controller.criteria) ...[
+                              CriterionCardEditor(
+                                key: ValueKey(criterion.id),
+                                criterion: criterion,
+                                onSave: controller.updateCriterion,
+                                onDelete: () =>
+                                    controller.removeCriterion(criterion.id),
+                              ),
+                              const SizedBox(height: 18),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
                     const SizedBox(height: 24),
                     Text(
                       'Tambah Kriteria Baru',
@@ -849,15 +904,27 @@ class _CustomBackgroundScreenState extends State<CustomBackgroundScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = AppController.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= kBreakpointDesktop;
+    final isTablet =
+        screenWidth >= kBreakpointTablet && screenWidth < kBreakpointDesktop;
+    final horizontalPadding = isDesktop ? 32.0 : isTablet ? 24.0 : 16.0;
+    // Preview background tidak perlu terlalu lebar – cap di 920
+    final contentMaxWidth = isDesktop ? 920.0 : isTablet ? 720.0 : 430.0;
 
     return Scaffold(
       body: AppBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              14,
+              horizontalPadding,
+              24,
+            ),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 920),
+                constraints: BoxConstraints(maxWidth: contentMaxWidth),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -1114,13 +1181,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= kBreakpointTablet;
+    final horizontalPadding = isTablet ? 24.0 : 16.0;
+
     return Scaffold(
       body: AppBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            padding: EdgeInsets.fromLTRB(
+              horizontalPadding,
+              14,
+              horizontalPadding,
+              24,
+            ),
             child: Center(
               child: ConstrainedBox(
+                // Form password tetap narrow – max 720
                 constraints: const BoxConstraints(maxWidth: 720),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
