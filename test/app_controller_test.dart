@@ -12,15 +12,14 @@ void main() {
   });
 
   test(
-    'SkinRecommendationApi posts to the local API and returns ranking results',
+    'SkinRecommendationApi posts to the public API and returns ranking results',
     () async {
       var calls = 0;
       final api = SkinRecommendationApi(
         client: MockClient((request) async {
           calls += 1;
           expect(request.url.scheme, 'http');
-          expect(request.url.host, 'localhost');
-          expect(request.url.port, 8000);
+          expect(request.url.host, 'pikskinmlbb.gamer.gd');
           expect(request.url.path, '/api/hitung-rekomendasi');
           expect(request.method, 'POST');
           expect(request.headers['Accept'], 'application/json');
@@ -31,11 +30,11 @@ void main() {
           expect(alternatives, hasLength(2));
           expect(
             (alternatives.first as Map<String, dynamic>)['scores'],
-            containsPair('57', 1000),
+            containsPair('1', 1000),
           );
           expect(
             (alternatives.first as Map<String, dynamic>)['scores'],
-            containsPair('64', 1),
+            containsPair('8', 1),
           );
 
           return http.Response(
@@ -138,7 +137,7 @@ void main() {
   );
 
   test(
-    'SkinRecommendationApi reports API connection failure when the local endpoint fails',
+    'SkinRecommendationApi reports API connection failure when the public endpoint fails',
     () async {
       var calls = 0;
       final api = SkinRecommendationApi(

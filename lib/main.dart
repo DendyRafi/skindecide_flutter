@@ -4,7 +4,7 @@ import 'admin_screens.dart';
 import 'app_controller.dart';
 import 'home_screen.dart';
 import 'shared_widgets.dart';
-import 'chatbot_page.dart';
+// import 'chatbot_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

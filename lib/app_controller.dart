@@ -698,20 +698,20 @@ class SkinRecommendationApi {
     : _client = client ?? createRecommendationHttpClient();
 
   static final Uri _endpoint = Uri.http(
-    // 'pikskinmlbb.gamer.gd',
-    'localhost:8000',
+    'pikskinmlbb.gamer.gd',
+    // 'localhost:8000',
     '/api/hitung-rekomendasi',
   );
 
   static const Map<String, String> _serverCriteriaIds = <String, String>{
-    'price': '57',
-    'category': '58',
-    'model': '59',
-    'portrait': '60',
-    'entrance': '61',
-    'effect': '62',
-    'heroPreference': '63',
-    'availability': '64',
+    'price': '1',
+    'category': '2',
+    'model': '3',
+    'portrait': '4',
+    'entrance': '5',
+    'effect': '6',
+    'heroPreference': '7',
+    'availability': '8',
   };
 
   final http.Client _client;

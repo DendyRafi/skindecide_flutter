@@ -865,8 +865,9 @@ class _CustomBackgroundScreenState extends State<CustomBackgroundScreen> {
       _loading = true;
     });
 
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
       type: FileType.image,
+      allowMultiple: false,
       withData: true,
     );
 
