@@ -23,7 +23,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   bool _isLoading = false;
 
   static const String _apiKey =
-      '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';
+      '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';
   static const String _model = 'llama-3.3-70b-versatile';
 
   static const String _systemPrompt = '''
