@@ -23,7 +23,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   bool _isLoading = false;
 
   static const String _apiKey =
-      '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';
+      'API';
   static const String _model = 'openai/gpt-oss-20b';
 
   static const String _systemPrompt = '''
@@ -360,7 +360,7 @@ class _BotAvatar extends StatelessWidget {
 // ─── User Avatar ──────────────────────────────────────────────────────────────
 
 class _UserAvatar extends StatelessWidget {
-  const _UserAvatar({this.size = 30});
+  const _UserAvatar() : size = 30;
 
   final double size;
 
